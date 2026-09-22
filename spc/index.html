@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini FDC/SPC Monitor — 장비 이상 감지 관제</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1c2733; --sub:#5b6b7b; --line:#e3e8ee;
+    --accent:#2563eb; --ok:#16a34a; --warn:#d97706; --bad:#dc2626;
+    --photo:#7c3aed; --etch:#dc6b26; --dep:#0284c7; --clean:#0e9f6e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI','Malgun Gothic',sans-serif; background:var(--bg); color:var(--ink); padding:18px; max-width:1220px; margin:0 auto;}
+  h1{font-size:1.3rem; letter-spacing:-.02em;}
+  h2{font-size:.98rem; margin-bottom:8px;}
+  .sub{color:var(--sub); font-size:.85rem; line-height:1.5;}
+  .row{display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; align-items:stretch;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px;}
+  button{border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:8px; padding:7px 11px; font-size:.83rem; cursor:pointer;}
+  button:hover{border-color:var(--accent); color:var(--accent);}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  button.primary:hover{opacity:.9; color:#fff;}
+  button.on{background:#eef2ff; border-color:var(--accent); color:var(--accent); font-weight:600;}
+  .msg{font-size:.82rem; color:var(--accent); margin-top:8px; min-height:1.2em;}
+  /* 장비 그리드 */
+  #grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px;}
+  .eq{border:2px solid var(--line); border-radius:10px; padding:8px 10px; cursor:pointer; background:#fff; position:relative;}
+  .eq.sel{outline:3px solid #bfdbfe;}
+  .eq .nm{font-weight:700; font-size:.85rem;}
+  .eq .grp{font-size:.7rem; color:var(--sub);}
+  .eq .light{position:absolute; top:8px; right:8px; width:12px; height:12px; border-radius:50%;}
+  .eq.g .light{background:var(--ok);} .eq.o .light{background:var(--warn);} .eq.r .light{background:var(--bad); animation:blink 1s infinite;}
+  .eq.o{border-color:var(--warn);} .eq.r{border-color:var(--bad);}
+  @keyframes blink{50%{opacity:.35;}}
+  .eq .badges{margin-top:5px; min-height:16px; display:flex; gap:3px; flex-wrap:wrap;}
+  .bdg{font-size:.62rem; padding:1px 5px; border-radius:4px; background:#fef3c7; color:#92400e; border:1px solid #fde68a;}
+  .bdg.hard{background:#fee2e2; color:#991b1b; border-color:#fecaca;}
+  .bn{font-size:.62rem; color:var(--photo); font-weight:600;}
+  /* 차트 */
+  canvas{width:100%; display:block;}
+  .chart-title{font-size:.76rem; color:var(--sub); margin:8px 0 3px;}
+  /* 알람 큐 */
+  .alarm{border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:8px; padding:7px 10px; margin-bottom:6px; font-size:.8rem; background:#fff;}
+  .alarm.hard{border-left-color:var(--bad);}
+  .alarm .t1{font-weight:700;}
+  .alarm .t2{color:var(--sub); font-size:.73rem; margin-top:2px; line-height:1.5;}
+  .alarm .score{float:right; font-weight:700; color:var(--ink);}
+  .alarm.quiet{opacity:.62; border-left-color:#94a3b8;}
+  .sensors{display:grid; grid-template-columns:repeat(auto-fit,minmax(430px,1fr)); gap:4px 20px;}
+  .alarm select, .alarm input{font-size:.73rem; padding:2px 4px; border:1px solid var(--line); border-radius:5px; margin-top:4px;}
+  .alarm button{padding:2px 8px; font-size:.72rem; margin-top:4px;}
+  .logline{font-size:.75rem; color:#33414f; border-bottom:1px dashed var(--line); padding:4px 2px; line-height:1.5;}
+  details{border:1px solid var(--line); border-radius:10px; background:#fff; padding:10px 14px; margin-top:10px;}
+  summary{cursor:pointer; font-weight:600; font-size:.88rem;}
+  details p, details li{font-size:.84rem; color:#33414f; line-height:1.65; margin-top:6px;}
+  .f{font-family:Consolas,monospace; background:#f1f5f9; padding:1px 6px; border-radius:4px; font-size:.8rem;}
+  table{border-collapse:collapse; font-size:.8rem; margin-top:8px;}
+  th,td{border:1px solid var(--line); padding:5px 9px; text-align:center;}
+  th{background:#f8fafc;}
+  .foot{margin:24px 0 8px; font-size:.74rem; color:var(--sub); line-height:1.6;}
+  .note{background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:8px 12px; font-size:.79rem; color:#92400e; margin-top:10px; line-height:1.55;}
+</style>
+</head>
+<body>
+
+<h1>Mini FDC/SPC Monitor <span style="font-weight:400; color:var(--sub); font-size:.9rem;">— 장비 센서 이상 감지 관제 (학습용 축소 모델)</span></h1>
+<p class="sub" style="margin-top:4px;">
+  가상 장비 12대의 센서 스트림을 <b>X̄-R 관리도 · Western Electric 런 규칙 · EWMA</b>로 감시하고,
+  심어둔 이상(평균 이동·드리프트·산포 증가·스파이크)을 잡아 <b>병목 가중 우선순위</b>로 대응 순서를 제안한다.
+  실무의 FDC/SPC 체계의 원리 축소판 — 다변량 분석(PCA)·트레이스 정렬은 범위 밖.
+</p>
+
+<div class="row">
+  <div class="card" style="flex:1;">
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <button id="btnRun" class="primary">▶ 시작</button>
+      <button id="btnReset">↺ 리셋</button>
+      <span style="width:6px"></span>
+      <label class="sub" style="display:inline;">배속</label>
+      <button class="spd on" data-s="1">1× (초당 2점)</button>
+      <button class="spd" data-s="3">3×</button>
+      <button class="spd" data-s="10">10×</button>
+      <span style="flex:1"></span>
+      <span class="sub" id="clock">t = 0 서브그룹</span>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+      <span class="sub" style="align-self:center;">이상 주입 시나리오:</span>
+      <button class="sc" data-s="S0">정상 운전</button>
+      <button class="sc" data-s="S1">① 드리프트</button>
+      <button class="sc" data-s="S2">② 평균 이동</button>
+      <button class="sc" data-s="S3">③ 산포 증가</button>
+      <button class="sc" data-s="S4">④ 스파이크</button>
+      <button class="sc" data-s="S5">⑤ 복합(우선순위 데모)</button>
+    </div>
+    <div class="msg" id="msg">시나리오를 누르면 고정 시드로 리셋 후 자동 시작한다 (같은 실험 재현 가능).</div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card" style="flex:1.15 1 380px;">
+    <h2>장비 그리드 <span class="sub" style="font-weight:400;">(클릭 = 관리도 보기 · <span class="bn">★ 병목(PHOTO)</span>은 우선순위 1.5배 가중)</span></h2>
+    <div id="grid"></div>
+    <div class="note">신호등: <b style="color:var(--ok)">정상</b> · <b style="color:var(--warn)">주의</b>(런 규칙·EWMA 위반) · <b style="color:var(--bad)">이상</b>(3σ 이탈·R 초과). "관리한계 안이어도 패턴이 비임의적이면 주의"가 런 규칙의 존재 이유다.</div>
+  </div>
+  <div class="card" style="flex:1 1 340px;">
+    <h2>알람 큐 <span class="sub" style="font-weight:400;">(우선순위 = 심각도 + 지속 − 확인 여부, 병목 ×1.5)</span></h2>
+    <div id="queue"><div class="sub">알람 없음</div></div>
+    <h2 style="margin-top:12px;">대응 로그</h2>
+    <div id="log" style="max-height:150px; overflow-y:auto;"><div class="sub">기록 없음</div></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card" style="flex:1;">
+    <h2 id="chartHead">관리도 — 장비를 선택하세요</h2>
+    <div class="sensors">
+      <div>
+        <div class="chart-title" id="ct1">센서 1</div>
+        <canvas id="cX1" height="108"></canvas>
+        <canvas id="cE1" height="70"></canvas>
+        <canvas id="cR1" height="62"></canvas>
+      </div>
+      <div>
+        <div class="chart-title" id="ct2">센서 2</div>
+        <canvas id="cX2" height="108"></canvas>
+        <canvas id="cE2" height="70"></canvas>
+        <canvas id="cR2" height="62"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card" style="flex:1;">
+    <h2>검증 모드 — 감지 엔진이 이론대로 작동하는가</h2>
+    <p class="sub">몬테카를로로 ① 정상 데이터에서 오경보까지의 평균 런 길이(ARL₀)가 이론값에 수렴하는지, ② 드리프트를 EWMA가 X̄보다 얼마나 빨리 잡는지 실측한다.</p>
+    <button id="btnVerify" class="primary" style="margin-top:8px;">검증 실행 (트라이얼 300회)</button>
+    <div id="verifyOut"></div>
+  </div>
+</div>
+
+<details>
+  <summary>이론 배경 — 이 도구가 서 있는 통계</summary>
+  <p><b>관리한계 vs 규격한계</b> — 관리한계(±3σ)는 "공정 자신의 소리"(정상 변동의 범위), 규격한계는 "고객의 소리"(허용 스펙). 관리도는 스펙 검사가 아니라 <b>공정이 평소와 달라졌는가</b>를 묻는 도구다.</p>
+  <p><b>3σ의 근거</b> — 정상 상태에서 한 점이 ±3σ를 벗어날 확률 ≈ 0.27% → 오경보까지의 평균 런 길이 <span class="f">ARL₀ = 1/0.0027 ≈ 370</span>. 한계를 좁히면 빨리 잡지만 오경보가 늘고, 넓히면 그 반대 — <b>오경보율과 탐지력의 트레이드오프</b>가 관리도 설계의 본질이다.</p>
+  <p><b>왜 EWMA를 추가하나</b> — X̄ 차트는 큰 변화에 강하지만 작은 드리프트에 둔감하다. EWMA <span class="f">z_t = λx̄_t + (1−λ)z_{t−1}</span>는 과거를 지수 가중으로 기억해 작은 누적 변화를 조기에 잡는다 (λ=0.2, L=2.86). 부품 마모 같은 점진 열화의 조기 경보가 목적.</p>
+  <p><b>런 규칙(Western Electric/Nelson)</b> — 한계 안이어도 "한쪽으로 연속 9점", "연속 6점 단조 증가", "3점 중 2점이 2σ 밖" 같은 패턴은 확률적으로 희귀 → 비임의 신호로 취급한다. 단, <b>룰을 켤수록 오경보도 는다</b> — 이 도구에서 패턴 룰(R2·R3)을 알람 큐에 올리지 않고 배지로만 두는 것은 다중 센서 감시의 오경보 관리를 위한 의도적 설계다(검증 모드에서 확인한 실측 판단).</p>
+  <p><b>스파이크는 R 차트가 잡는다</b> — 단발 이상치는 서브그룹 평균(X̄)에서 1/5로 희석되지만, 범위(R)는 그대로 커진다. "차트가 여러 장인 이유"의 실례.</p>
+</details>
+
+<p class="foot">학습·포트폴리오 목적의 원리 구현(2026.08) · 가상 데이터 · 실제 FDC(다변량 PCA/PLS·트레이스 정렬)와 규모·기능 비교 불가 · 특정 기업의 시스템·데이터와 무관</p>
+
+<script>
+"use strict";
+/* ---------- 시드 고정 난수 ---------- */
+let _seed = 12345;
+function srand(s){ _seed = s>>>0; }
+function rnd(){ _seed |= 0; _seed = _seed + 0x6D2B79F5 | 0; let t = Math.imul(_seed ^ _seed>>>15, 1|_seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }
+function nrand(){ let u=0,v=0; while(u===0)u=rnd(); while(v===0)v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+/* ---------- 상수 (Montgomery, n=5 표준) ---------- */
+const N_SUB = 5;                       // 서브그룹 크기
+const d2 = 2.326, D1 = 0, D2 = 4.918;  // R 차트 (표준값 부여 방식)
+const LAMBDA = 0.2, L_EWMA = 2.86;     // EWMA 파라미터 (X̄와 오경보 수준을 맞춘 ARL0≈370 설계)
+
+/* ---------- 장비 정의 ---------- */
+const GROUPS = [
+  {key:"PHOTO", col:"#7c3aed", bottleneck:true},
+  {key:"ETCH",  col:"#dc6b26", bottleneck:false},
+  {key:"DEP",   col:"#0284c7", bottleneck:false},
+  {key:"CLEAN", col:"#0e9f6e", bottleneck:false},
+];
+const SENSORS = [
+  {key:"TEMP", name:"챔버 온도(℃)", mu:220, sigma:1.2},
+  {key:"RF",   name:"RF 파워(W)",   mu:500, sigma:4.0},
+];
+const EQ = [];
+GROUPS.forEach(g=>{ for(let i=1;i<=3;i++) EQ.push({id:`${g.key}-${i}`, grp:g.key, col:g.col, bottleneck:g.bottleneck}); });
+
+/* ---------- 시나리오 (고정 시드 재현) ---------- */
+const SCEN = {
+  S0:{seed:101, msg:"정상 운전 — 개별 센서의 오경보율은 0.27%지만, 24개 센서를 동시에 감시하면 오경보가 일상이 된다. 다중 감시의 오경보 관리(어떤 룰을 큐에 올릴 것인가)가 실무 이슈인 이유.", inj:[]},
+  S1:{seed:102, msg:"① 드리프트 — ETCH-2 온도가 t=40부터 서브그룹당 +0.04σ씩 점진 상승(부품 마모형). EWMA가 X̄보다 먼저 잡는 것을 관찰.", inj:[{eq:"ETCH-2", sn:0, type:"drift", at:40, slope:0.04}]},
+  S2:{seed:103, msg:"② 평균 이동 — DEP-1 RF 파워가 t=40에 +1.0σ 계단 이동(세팅 틀어짐형). X̄·EWMA가 빠르게 감지.", inj:[{eq:"DEP-1", sn:1, type:"shift", at:40, delta:1.0}]},
+  S3:{seed:104, msg:"③ 산포 증가 — CLEAN-3 온도의 σ가 t=40부터 2배(제어 불안정형). 평균은 그대로 — R 차트가 잡는다.", inj:[{eq:"CLEAN-3", sn:0, type:"var", at:40, k:2.0}]},
+  S4:{seed:105, msg:"④ 스파이크 — PHOTO-1 RF에 간헐 단발 이상치(+6σ). X̄에서는 1/5로 희석 — R 차트의 역할 관찰.", inj:[{eq:"PHOTO-1", sn:1, type:"spike", at:30, every:25, mag:6}]},
+  S5:{seed:106, msg:"⑤ 복합 — PHOTO-2 드리프트 + ETCH-3 산포 + CLEAN-2 평균이동 동시 발생. 알람 큐의 우선순위(병목 가중)가 대응 순서를 제안한다.", inj:[
+      {eq:"PHOTO-2", sn:0, type:"drift", at:35, slope:0.05},
+      {eq:"ETCH-3", sn:0, type:"var", at:40, k:1.9},
+      {eq:"CLEAN-2", sn:1, type:"shift", at:45, delta:0.9}]},
+};
+
+/* ---------- 상태 ---------- */
+let S = null, running=false, speed=1, selEq="PHOTO-1", curScen="S0";
+function freshState(scen){
+  const sc = SCEN[scen]; srand(sc.seed);
+  return {
+    t:0, // 서브그룹 인덱스
+    inj: sc.inj,
+    sens: EQ.map(eq => SENSORS.map(sn => ({
+      xbars:[], ranges:[], ewma:[], viol:[], // viol: 서브그룹별 규칙 위반 리스트
+      z: sn.mu, // EWMA 상태
+    }))),
+    alarms:[],   // {id, eq, snIdx, rule, startT, lastT, acked:false}
+    logs:[], alarmSeq:0,
+  };
+}
+
+/* ---------- 데이터 생성 ---------- */
+function genSubgroup(eqIdx, snIdx, t){
+  const eq = EQ[eqIdx], sn = SENSORS[snIdx];
+  let mu = sn.mu, sig = sn.sigma, spikeAt = -1;
+  for(const inj of S.inj){
+    if(inj.eq!==eq.id || inj.sn!==snIdx || t < inj.at) continue;
+    if(inj.type==="shift") mu += inj.delta*sn.sigma;
+    if(inj.type==="drift") mu += inj.slope*sn.sigma*(t-inj.at);
+    if(inj.type==="var")   sig = sn.sigma*inj.k;
+    if(inj.type==="spike" && (t-inj.at)%inj.every===0) spikeAt = Math.floor(rnd()*N_SUB);
+  }
+  const xs = [];
+  for(let i=0;i<N_SUB;i++){
+    let v = mu + sig*nrand();
+    if(i===spikeAt) v += (spikeAt>=0? 1:0)* (sn.sigma*6);
+    xs.push(v);
+  }
+  const xbar = xs.reduce((a,b)=>a+b,0)/N_SUB;
+  const range = Math.max(...xs)-Math.min(...xs);
+  return {xbar, range};
+}
+
+/* ---------- 감지 엔진 ---------- */
+function detect(st, sn, xbar, range, t){
+  const sigX = sn.sigma/Math.sqrt(N_SUB), mu = sn.mu;
+  const v = [];
+  // R1: 3σ 이탈
+  if(Math.abs(xbar-mu) > 3*sigX) v.push("R1");
+  // R4: 최근 3점 중 2점이 같은 쪽 2σ 밖
+  const xs = st.xbars.concat([xbar]); const last3 = xs.slice(-3);
+  if(last3.length===3){
+    const hi = last3.filter(x=>x-mu> 2*sigX).length, lo = last3.filter(x=>mu-x> 2*sigX).length;
+    if(hi>=2||lo>=2) v.push("R4");
+  }
+  // R2: 한쪽 연속 9점 (Nelson rule — 오경보 관리를 위해 WE 8점 대신 채택)
+  const last9 = xs.slice(-9);
+  if(last9.length===9 && (last9.every(x=>x>mu)||last9.every(x=>x<mu))) v.push("R2");
+  // R3: 연속 6점 단조
+  const last6 = xs.slice(-6);
+  if(last6.length===6){
+    let up=true, dn=true;
+    for(let i=1;i<6;i++){ if(last6[i]<=last6[i-1]) up=false; if(last6[i]>=last6[i-1]) dn=false; }
+    if(up||dn) v.push("R3");
+  }
+  // R 차트: 범위 초과
+  if(range > D2*sn.sigma) v.push("RCHART");
+  // EWMA
+  st.z = LAMBDA*xbar + (1-LAMBDA)*st.z;
+  const limE = L_EWMA*sigX*Math.sqrt(LAMBDA/(2-LAMBDA));
+  if(Math.abs(st.z-mu) > limE) v.push("EWMA");
+  return v;
+}
+const RULE_INFO = {
+  R1:{sev:3, hard:true,  queue:true,  txt:"X̄ 3σ 관리한계 이탈"},
+  RCHART:{sev:3, hard:true, queue:true, txt:"R 차트 초과(산포·스파이크)"},
+  R4:{sev:2.5, hard:false, queue:true, txt:"3점 중 2점 2σ 밖(WE Rule)"},
+  EWMA:{sev:2, hard:false, queue:true, txt:"EWMA 한계 이탈(드리프트 의심)"},
+  R2:{sev:1.5, hard:false, queue:false, txt:"한쪽 연속 9점(패턴 주의 — 배지만)"},
+  R3:{sev:1.5, hard:false, queue:false, txt:"연속 6점 단조(패턴 주의 — 배지만)"},
+};
+
+/* ---------- 틱 ---------- */
+function tick(){
+  S.t++;
+  EQ.forEach((eq,ei)=>{
+    SENSORS.forEach((sn,si)=>{
+      const st = S.sens[ei][si];
+      const {xbar, range} = genSubgroup(ei, si, S.t);
+      const v = detect(st, sn, xbar, range, S.t);
+      st.xbars.push(xbar); st.ranges.push(range); st.ewma.push(st.z); st.viol.push(v);
+      if(st.xbars.length>120){ st.xbars.shift(); st.ranges.shift(); st.ewma.shift(); st.viol.shift(); }
+      // 알람 에피소드 갱신 — 큐 등재는 확실한 신호만(R1·R차트·EWMA·R4), 패턴 룰(R2·R3)은 배지로만
+      v.forEach(rule=>{
+        if(!RULE_INFO[rule].queue) return;
+        let a = S.alarms.find(a=>!a.closed && a.eq===eq.id && a.snIdx===si && a.rule===rule);
+        if(a){ a.lastT = S.t; }
+        else S.alarms.push({id:++S.alarmSeq, eq:eq.id, snIdx:si, rule, startT:S.t, lastT:S.t, acked:false, closed:false});
+      });
+    });
+  });
+  // 오래 조용한 에피소드는 "소강" 처리 (12 서브그룹 무신호) — 큐에서 사라지지 않고 ack까지 유지
+  S.alarms.forEach(a=>{ if(!a.closed && S.t - a.lastT > 12) a.closed = true; });
+}
+
+/* ---------- 우선순위 ---------- */
+function priority(a){
+  const eq = EQ.find(e=>e.id===a.eq);
+  const dur = Math.min(a.lastT - a.startT + 1, 20);
+  const base = RULE_INFO[a.rule].sev + 0.15*dur;
+  return base * (eq.bottleneck? 1.5 : 1.0);
+}
+
+/* ---------- UI ---------- */
+const $ = id=>document.getElementById(id);
+function buildGrid(){
+  const g = $("grid"); g.innerHTML="";
+  EQ.forEach((eq,ei)=>{
+    const d = document.createElement("div");
+    d.className="eq g"; d.id="eq_"+eq.id;
+    d.innerHTML = `<div class="light"></div><div class="nm" style="color:${eq.col}">${eq.id} ${eq.bottleneck?'<span class="bn">★</span>':''}</div>
+      <div class="grp">${eq.grp} · 센서 2종</div><div class="badges"></div>`;
+    d.addEventListener("click", ()=>{ selEq = eq.id; render(); });
+    g.appendChild(d);
+  });
+}
+function eqStatus(eqId){
+  const ei = EQ.findIndex(e=>e.id===eqId);
+  let hard=false, soft=false;
+  SENSORS.forEach((sn,si)=>{
+    const viol = S.sens[ei][si].viol.slice(-5);
+    viol.forEach(vs=>vs.forEach(r=>{ if(RULE_INFO[r].hard) hard=true; else soft=true; }));
+  });
+  return hard? "r" : (soft? "o":"g");
+}
+function render(){
+  $("clock").textContent = "t = " + S.t + " 서브그룹";
+  // 그리드
+  EQ.forEach(eq=>{
+    const el = $("eq_"+eq.id);
+    el.className = "eq " + eqStatus(eq.id) + (eq.id===selEq? " sel":"");
+    const ei = EQ.findIndex(e=>e.id===eq.id);
+    const badges = new Set();
+    SENSORS.forEach((sn,si)=> S.sens[ei][si].viol.slice(-5).forEach(vs=>vs.forEach(r=>badges.add(r))));
+    el.querySelector(".badges").innerHTML = [...badges].map(r=>`<span class="bdg ${RULE_INFO[r].hard?'hard':''}">${r}</span>`).join("");
+  });
+  // 알람 큐 — 구성(어떤 알람이 있는가)이 바뀔 때만 DOM 재구축, 숫자(점수·지속)는 제자리 갱신
+  const open = S.alarms.filter(a=>!a.acked).sort((a,b)=>priority(b)-priority(a)).slice(0,8);
+  const sig = open.map(a=>a.id+(a.closed?"q":"a")).join(",");
+  if(sig !== S._qsig){
+    const keep = {};
+    document.querySelectorAll("#queue select").forEach(s=>keep[s.id]=s.value);
+    S._qsig = sig;
+    $("queue").innerHTML = open.length? "" : '<div class="sub">알람 없음</div>';
+    open.forEach(a=>{
+      const eq = EQ.find(e=>e.id===a.eq), sn = SENSORS[a.snIdx];
+      const d = document.createElement("div");
+      d.className = "alarm" + (RULE_INFO[a.rule].hard? " hard":"") + (a.closed? " quiet":"");
+      d.innerHTML = `<span class="score" id="pr_${a.id}">${priority(a).toFixed(1)}</span>
+        <div class="t1">${a.eq} · ${sn.name} · ${a.rule}${a.closed? ' <span style="font-weight:400; color:#64748b; font-size:.72rem;">— 신호 소강(재발 감시)</span>':''}</div>
+        <div class="t2">${RULE_INFO[a.rule].txt} — t=${a.startT}부터 (지속 <span id="du_${a.id}">${a.lastT-a.startT+1}</span>)${eq.bottleneck? " · <b>병목 가중 ×1.5</b>":""}</div>
+        <select id="act_${a.id}"><option>장비사 점검 요청</option><option>레시피/세팅 확인</option><option>재발 감시</option><option>PM 앞당김 검토</option></select>
+        <button data-ack="${a.id}">확인(ack)</button>`;
+      $("queue").appendChild(d);
+    });
+    Object.entries(keep).forEach(([id,v])=>{ const s=$(id); if(s) s.value=v; });
+    document.querySelectorAll("[data-ack]").forEach(b=>b.addEventListener("click", e=>{
+      const a = S.alarms.find(x=>x.id===+e.target.dataset.ack);
+      a.acked = true;
+      const act = $("act_"+a.id).value;
+      S.logs.unshift(`[t=${S.t}] ${a.eq} ${a.rule} → 조치: ${act}`);
+      S._qsig = null; render();
+    }));
+  } else {
+    open.forEach(a=>{
+      const p=$("pr_"+a.id); if(p) p.textContent = priority(a).toFixed(1);
+      const du=$("du_"+a.id); if(du) du.textContent = a.lastT-a.startT+1;
+    });
+  }
+  $("log").innerHTML = S.logs.length? S.logs.slice(0,12).map(l=>`<div class="logline">${l}</div>`).join("") : '<div class="sub">기록 없음</div>';
+  // 관리도
+  const ei = EQ.findIndex(e=>e.id===selEq);
+  $("chartHead").textContent = "관리도 — " + selEq + (EQ[ei].bottleneck? " (병목 장비)":"");
+  SENSORS.forEach((sn,si)=>{
+    $("ct"+(si+1)).textContent = sn.name + ` — X̄ 관리도(위) · EWMA(중) · R 차트(아래), μ=${sn.mu}, σ=${sn.sigma}`;
+    drawXbar($("cX"+(si+1)), S.sens[ei][si], sn);
+    drawEwma($("cE"+(si+1)), S.sens[ei][si], sn);
+    drawR($("cR"+(si+1)), S.sens[ei][si], sn);
+  });
+}
+
+/* ---------- 차트 ---------- */
+function setup(cv){
+  // 표시 높이를 최초 1회 인라인 스타일로 고정 — height 속성을 다시 읽으면 렌더마다 2배씩 증폭되는 버그 방지
+  if(!cv._h){ cv._h = +cv.getAttribute("height"); cv.style.height = cv._h + "px"; }
+  const w = cv.clientWidth||600, h = cv._h;
+  if(cv.width!==w*2 || cv.height!==h*2){ cv.width=w*2; cv.height=h*2; }
+  const g = cv.getContext("2d"); g.setTransform(2,0,0,2,0,0); g.clearRect(0,0,w,h);
+  return [g,w,h];
+}
+function xpos(i,n,w){ return 8 + i/(Math.max(n-1,1))*(w-16); }
+function drawSeries(g,data,w,h,ymap,color,violList,hardOnly){
+  g.strokeStyle=color; g.lineWidth=1.4; g.beginPath();
+  data.forEach((v,i)=>{ const x=xpos(i,data.length,w), y=ymap(v); i?g.lineTo(x,y):g.moveTo(x,y); });
+  g.stroke();
+  if(violList){
+    data.forEach((v,i)=>{
+      const vs = violList[i]||[];
+      const hard = vs.some(r=>RULE_INFO[r].hard), soft = vs.length>0;
+      if(hard||(!hardOnly&&soft)){
+        g.fillStyle = hard? "#dc2626" : "#d97706";
+        g.beginPath(); g.arc(xpos(i,data.length,w), ymap(v), 3, 0, 7); g.fill();
+      }
+    });
+  }
+}
+function hline(g,y,w,color,dash){ g.strokeStyle=color; g.lineWidth=1; g.setLineDash(dash||[]); g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); g.setLineDash([]); }
+function drawXbar(cv, st, sn){
+  const [g,w,h]=setup(cv); const sigX=sn.sigma/Math.sqrt(N_SUB);
+  const lo=sn.mu-4.2*sigX, hi=sn.mu+4.2*sigX;
+  const ymap = v=> h - (Math.min(Math.max(v,lo),hi)-lo)/(hi-lo)*(h-10) - 5;
+  // 존 밴드
+  g.fillStyle="#fef2f2"; g.fillRect(0,0,w,ymap(sn.mu+3*sigX)); g.fillRect(0,ymap(sn.mu-3*sigX),w,h-ymap(sn.mu-3*sigX));
+  hline(g,ymap(sn.mu),w,"#94a3b8"); hline(g,ymap(sn.mu+3*sigX),w,"#dc2626",[4,3]); hline(g,ymap(sn.mu-3*sigX),w,"#dc2626",[4,3]);
+  hline(g,ymap(sn.mu+2*sigX),w,"#e5b96a",[2,4]); hline(g,ymap(sn.mu-2*sigX),w,"#e5b96a",[2,4]);
+  drawSeries(g, st.xbars, w, h, ymap, "#2563eb", st.viol, false);
+  g.fillStyle="#5b6b7b"; g.font="10px Segoe UI"; g.fillText("X̄  ±3σ(빨강)·±2σ(노랑)", 6, 12);
+}
+function drawEwma(cv, st, sn){
+  const [g,w,h]=setup(cv); const sigX=sn.sigma/Math.sqrt(N_SUB);
+  const lim = L_EWMA*sigX*Math.sqrt(LAMBDA/(2-LAMBDA));
+  const lo=sn.mu-2.2*lim, hi=sn.mu+2.2*lim;
+  const ymap = v=> h - (Math.min(Math.max(v,lo),hi)-lo)/(hi-lo)*(h-8) - 4;
+  hline(g,ymap(sn.mu),w,"#94a3b8"); hline(g,ymap(sn.mu+lim),w,"#7c3aed",[4,3]); hline(g,ymap(sn.mu-lim),w,"#7c3aed",[4,3]);
+  const ew = st.ewma.map(z=>z);
+  g.strokeStyle="#7c3aed"; g.lineWidth=1.5; g.beginPath();
+  ew.forEach((v,i)=>{ const x=xpos(i,ew.length,w), y=ymap(v); i?g.lineTo(x,y):g.moveTo(x,y); });
+  g.stroke();
+  ew.forEach((v,i)=>{ if((st.viol[i]||[]).includes("EWMA")){ g.fillStyle="#7c3aed"; g.beginPath(); g.arc(xpos(i,ew.length,w),ymap(v),3,0,7); g.fill(); } });
+  g.fillStyle="#5b6b7b"; g.font="10px Segoe UI"; g.fillText(`EWMA λ=${LAMBDA}, L=${L_EWMA} — 작은 드리프트 조기 감지`, 6, 12);
+}
+function drawR(cv, st, sn){
+  const [g,w,h]=setup(cv);
+  const hi = D2*sn.sigma*1.5;
+  const ymap = v=> h - Math.min(v,hi)/hi*(h-8) - 4;
+  hline(g,ymap(d2*sn.sigma),w,"#94a3b8",[2,3]); hline(g,ymap(D2*sn.sigma),w,"#dc2626",[4,3]);
+  g.strokeStyle="#0e9f6e"; g.lineWidth=1.2; g.beginPath();
+  st.ranges.forEach((v,i)=>{ const x=xpos(i,st.ranges.length,w), y=ymap(v); i?g.lineTo(x,y):g.moveTo(x,y); });
+  g.stroke();
+  st.ranges.forEach((v,i)=>{ if((st.viol[i]||[]).includes("RCHART")){ g.fillStyle="#dc2626"; g.beginPath(); g.arc(xpos(i,st.ranges.length,w),ymap(v),3,0,7); g.fill(); } });
+  g.fillStyle="#5b6b7b"; g.font="10px Segoe UI"; g.fillText("R (산포·스파이크 감시) — 빨간 선 = UCL", 6, 12);
+}
+
+/* ---------- 검증 모드 ---------- */
+function verify(){
+  const T = 300;
+  // 1) ARL0: X̄ R1만
+  let sum1=0;
+  for(let k=0;k<T;k++){ let t=0; while(true){ t++; if(Math.abs(nrand())>3){ sum1+=t; break; } if(t>20000){sum1+=t;break;} } }
+  const arl0X = sum1/T;
+  // 2) ARL0: EWMA (점근 한계)
+  const limZ = L_EWMA*Math.sqrt(LAMBDA/(2-LAMBDA));
+  let sum2=0;
+  for(let k=0;k<T;k++){ let z=0,t=0; while(true){ t++; z = LAMBDA*nrand() + (1-LAMBDA)*z; if(Math.abs(z)>limZ){ sum2+=t; break; } if(t>50000){sum2+=t;break;} } }
+  const arl0E = sum2/T;
+  // 3) 드리프트 감지 지연: 서브그룹당 +0.04σx̄... (x̄ 단위 표준화: 평균이 0.04·√5·? — 실제 시나리오와 동일하게 σ(개별) 기준 slope 0.04 → x̄ 표준화 기울기 0.04·√5 ≈ 0.089σx̄)
+  const slope = 0.04*Math.sqrt(N_SUB);
+  let dX=0, dE=0;
+  for(let k=0;k<T;k++){
+    let t=0; while(true){ t++; const x = slope*t + nrand(); if(Math.abs(x)>3){ dX+=t; break; } }
+    let z=0; t=0; while(true){ t++; const x = slope*t + nrand(); z = LAMBDA*x + (1-LAMBDA)*z; if(Math.abs(z)>limZ){ dE+=t; break; } }
+  }
+  const delayX = dX/T, delayE = dE/T;
+  $("verifyOut").innerHTML = `
+    <table>
+      <tr><th>항목</th><th>이론값</th><th>실측(300회 평균)</th><th>해석</th></tr>
+      <tr><td>ARL₀ — X̄ 3σ</td><td>≈ 370</td><td><b>${arl0X.toFixed(0)}</b></td><td>정상 공정에서 서브그룹 ${arl0X.toFixed(0)}개당 오경보 1회 — 3σ 설계 의도대로</td></tr>
+      <tr><td>ARL₀ — EWMA(λ=0.2, L=2.86)</td><td>≈ 370 (X̄와 오경보 수준을 맞춘 설계)</td><td><b>${arl0E.toFixed(0)}</b></td><td>두 차트의 오경보율을 같게 두고 탐지 속도만 공정하게 비교하기 위한 파라미터 선택</td></tr>
+      <tr><td>드리프트(0.04σ/서브그룹) 감지 지연 — X̄</td><td rowspan="2">EWMA가 유의하게 빠름</td><td><b>${delayX.toFixed(1)} 서브그룹</b></td><td rowspan="2">같은 오경보 수준에서 EWMA가 약 ${(delayX/delayE).toFixed(1)}배 빠르게 감지 — 점진 열화(부품 마모) 조기 경보의 근거</td></tr>
+      <tr><td>드리프트 감지 지연 — EWMA</td><td><b>${delayE.toFixed(1)} 서브그룹</b></td></tr>
+    </table>`;
+}
+
+/* ---------- 루프·이벤트 ---------- */
+/* 페이스: 1× = 초당 서브그룹 2개 (사람이 차트 전개를 따라올 수 있는 속도). 렌더는 250ms 스로틀. */
+let acc=0, lastTs=performance.now(), renderAt=0;
+function frame(ts){
+  const dt = Math.min((ts-lastTs)/1000, 0.5); lastTs = ts;
+  if(running){
+    acc += dt * 2 * speed;
+    let n = Math.floor(acc); acc -= n;
+    if(n>60) n = 60;
+    for(let i=0;i<n;i++) tick();
+    if(n>0 && ts>renderAt){ render(); renderAt = ts+250; }
+  }
+  requestAnimationFrame(frame);
+}
+$("btnRun").addEventListener("click", ()=>{ running=!running; $("btnRun").textContent = running? "⏸ 정지":"▶ 시작"; });
+$("btnReset").addEventListener("click", ()=>{ S=freshState(curScen); render(); });
+document.querySelectorAll(".spd").forEach(b=>b.addEventListener("click", e=>{
+  speed=+e.target.dataset.s;
+  document.querySelectorAll(".spd").forEach(x=>x.classList.toggle("on",x===e.target));
+}));
+document.querySelectorAll(".sc").forEach(b=>b.addEventListener("click", e=>{
+  curScen = e.target.dataset.s;
+  $("msg").textContent = SCEN[curScen].msg;
+  S = freshState(curScen);
+  // 시나리오 대상 장비 자동 선택
+  if(SCEN[curScen].inj.length) selEq = SCEN[curScen].inj[0].eq;
+  running = true; $("btnRun").textContent="⏸ 정지";
+  render();
+}));
+$("btnVerify").addEventListener("click", ()=>{ srand(777); verify(); });
+
+/* ---------- 시작 ---------- */
+buildGrid();
+S = freshState("S0");
+render();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

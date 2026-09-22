@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>손민수 포트폴리오</title>
+<meta name="description" content="데이터를 판단의 근거로, AI를 현장이 믿고 쓰는 도구로 만드는 사람">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231450A3'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>M</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#1a1c20; --ink-2:#4b5563; --ink-3:#8b93a1;
+  --accent:#1450a3; --accent-soft:#e8f0fb; --accent-line:#bcd2ef;
+  --surface:#ffffff; --bg:#f7f8fa; --border:#e5e7eb; --chip:#eef1f5;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth; scroll-padding-top:64px}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif;
+  color:var(--ink); background:var(--bg); line-height:1.65; font-size:16px;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:960px; margin:0 auto; padding:0 20px}
+
+/* nav */
+nav{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--border)}
+nav .wrap{display:flex; align-items:center; gap:4px; height:52px; overflow-x:auto; scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav .brand{font-weight:800; font-size:15px; margin-right:8px; white-space:nowrap}
+nav a{color:var(--ink-2); text-decoration:none; font-size:13.5px; padding:6px 10px;
+  border-radius:8px; white-space:nowrap}
+nav a:hover{background:var(--chip); color:var(--ink)}
+
+/* hero */
+header{background:var(--surface); border-bottom:1px solid var(--border)}
+.hero{padding:56px 0 44px}
+.hero h1{font-size:clamp(24px,4.6vw,34px); font-weight:800; letter-spacing:-.02em; line-height:1.35}
+.hero h1 .em{color:var(--accent)}
+.hero .who{margin-top:14px; color:var(--ink-2); font-size:15px}
+.axes{display:flex; gap:10px; margin-top:22px; flex-wrap:wrap}
+.axis{border:1px solid var(--accent-line); background:var(--accent-soft); color:var(--ink);
+  border-radius:10px; padding:10px 14px; font-size:13.5px}
+.axis b{color:var(--accent)}
+.hero .note{margin-top:22px; font-size:12.5px; color:var(--ink-3)}
+
+/* section */
+section{padding:52px 0 8px}
+.sec-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.badge{font-size:12px; font-weight:700; color:var(--accent); background:var(--accent-soft);
+  border:1px solid var(--accent-line); border-radius:999px; padding:3px 10px; white-space:nowrap}
+h2{font-size:21px; font-weight:800; letter-spacing:-.01em}
+.sec-sub{color:var(--ink-2); font-size:14.5px; margin-top:10px; max-width:760px}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:22px; margin-top:18px}
+.card h3{font-size:15px; font-weight:700; margin-bottom:12px}
+.boundary{margin-top:14px; font-size:12.5px; color:var(--ink-3); border-top:1px dashed var(--border); padding-top:10px}
+
+/* stat tiles */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:18px}
+.stat{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px}
+.stat .n{font-size:24px; font-weight:800; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
+.stat .l{font-size:12.5px; color:var(--ink-2); margin-top:3px}
+.stat .s{font-size:11.5px; color:var(--ink-3); margin-top:2px}
+
+/* flow chips */
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin-top:16px}
+.step{background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:10px 12px; font-size:13px; color:var(--ink-2); flex:1 1 150px; min-width:140px}
+.step b{display:block; color:var(--ink); font-size:13.5px; margin-bottom:2px}
+.step.hi{border-color:var(--accent-line); background:var(--accent-soft)}
+.step.hi b{color:var(--accent)}
+.arrow{align-self:center; color:var(--ink-3); font-size:14px; flex:0 0 auto}
+
+/* two-col diagram */
+.duo{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px}
+@media(max-width:640px){.duo{grid-template-columns:1fr}}
+.pane{border:1px solid var(--border); border-radius:12px; padding:14px 16px; background:var(--surface)}
+.pane.ai{border-color:var(--accent-line); background:var(--accent-soft)}
+.pane h4{font-size:13px; font-weight:700; margin-bottom:8px}
+.pane.ai h4{color:var(--accent)}
+.pane ul{list-style:none}
+.pane li{font-size:13px; color:var(--ink-2); padding:5px 0; border-top:1px solid rgba(0,0,0,.05)}
+.pane li:first-child{border-top:none}
+.pane li b{color:var(--ink)}
+
+/* media */
+.shots{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px}
+@media(max-width:640px){.shots{grid-template-columns:1fr}}
+figure{margin:0}
+figure img,figure video{width:100%; display:block; border-radius:10px; border:1px solid var(--border); background:#0b0b0e}
+figcaption{font-size:12.5px; color:var(--ink-3); margin-top:6px}
+.shot-wide{grid-column:1/-1}
+
+/* demo iframe */
+.demo{margin-top:18px; border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--surface)}
+.demo-bar{display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid var(--border); font-size:13px; color:var(--ink-2)}
+.demo-bar .dot{width:9px; height:9px; border-radius:50%; background:#d7dbe2}
+.demo-bar a{margin-left:auto; color:#fff; background:var(--accent); text-decoration:none;
+  font-size:12.5px; font-weight:700; padding:6px 12px; border-radius:8px}
+.demo-view{position:relative; width:100%; aspect-ratio:16/10; overflow:hidden}
+.demo-view iframe{width:200%; height:200%; transform:scale(.5); transform-origin:0 0; border:0}
+
+.btn{display:inline-block; color:#fff; background:var(--accent); text-decoration:none;
+  font-size:13px; font-weight:700; padding:8px 14px; border-radius:9px; margin-top:14px}
+.btn.ghost{color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent-line)}
+
+footer{margin-top:56px; border-top:1px solid var(--border); background:var(--surface)}
+footer .wrap{padding:28px 20px 40px; font-size:12.5px; color:var(--ink-3)}
+footer b{color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">손민수</span>
+  <a href="#spc">관제 대시보드</a>
+  <a href="#pargan">AI NPC 게임</a>
+  <a href="#obsidian">AI 협업 체계</a>
+  <a href="#hancell">업무 자동화</a>
+  <a href="#funding">크라우드펀딩</a>
+  <a href="#ddmk">데이터 분석</a>
+</div></nav>
+
+<header><div class="wrap hero">
+  <h1>데이터를 <span class="em">판단의 근거</span>로,<br>AI를 현장이 <span class="em">믿고 쓰는 도구</span>로 만듭니다.</h1>
+  <div class="who">손민수 — 성균관대학교 시스템경영공학과 · 인공지능융합 복수전공</div>
+  <div class="axes">
+    <div class="axis"><b>축 1 · 데이터 → 판단 근거</b><br>데이터에서 문제를 정의하고 결정의 근거를 만듭니다 — 관제 대시보드 · 수요예측 · 프로세스 마이닝</div>
+    <div class="axis"><b>축 2 · AI → 믿고 쓰는 도구</b><br>AI의 판단을 검증 가능한 구조로 설계합니다 — AI NPC 라우터 · 협업 문서 체계 · 업무 자동화</div>
+  </div>
+  <div class="note">모든 수치는 원 자료(시뮬레이션 로그 · 회계 시트 · 발표자료)에서 검증한 값이며, 팀 산출물에는 담당 범위를 표기했습니다.</div>
+</div></header>
+
+<main class="wrap">
+
+<!-- ============ SPC ============ -->
+<section id="spc">
+  <div class="sec-head"><span class="badge">축 1 · 데이터</span><h2>SPC 공정 관제 대시보드 개발</h2></div>
+  <p class="sec-sub">전공에서 배운 통계적 공정관리(SPC)를 운영 관점에서 검증하려고 직접 만든 관제 대시보드입니다.
+  모의 설비 12대·센서 24개의 스트림을 관리도로 감시하고, 심어 둔 이상(드리프트·산포 증가·스파이크)을 통계 규칙으로 잡아
+  대응 우선순위를 매깁니다. 단일 HTML로 동작하며, 아래에서 바로 실행해 볼 수 있습니다.</p>
+
+  <div class="demo">
+    <div class="demo-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      라이브 데모 — 이 화면에서 바로 조작할 수 있습니다
+      <a href="spc/" target="_blank" rel="noopener">전체 화면으로 실행 ↗</a></div>
+    <div class="demo-view"><iframe src="spc/" loading="lazy" title="SPC 관제 대시보드 라이브 데모"></iframe></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">81 → 54건</div><div class="l">정상 운전 오경보 누적 → 조정</div><div class="s">동일 시드 재현 검증</div></div>
+    <div class="stat"><div class="n">약 1.4배</div><div class="l">EWMA의 점진 변화 감지 속도</div><div class="s">X̄-R 관리도 대비</div></div>
+    <div class="stat"><div class="n">375 · 371</div><div class="l">ARL₀ (X̄ · EWMA)</div><div class="s">몬테카를로 300회, 목표 약 370</div></div>
+  </div>
+
+  <div class="card">
+    <h3>다중 감시의 문제 — 규칙을 늘릴수록 오경보도 쌓인다</h3>
+    <div class="flow">
+      <div class="step"><b>개별 관리도</b>오경보 드묾 — ARL₀ 검증으로 확인</div><span class="arrow">→</span>
+      <div class="step"><b>24개 센서 × 여러 규칙</b>정상 운전에서도 오경보 81건 누적</div><span class="arrow">→</span>
+      <div class="step hi"><b>기준 분리</b>연속·추세 패턴 규칙은 주의 표시로</div><span class="arrow">→</span>
+      <div class="step hi"><b>대응 목록 54건</b>확실한 신호만 대응 대상으로</div>
+    </div>
+    <div class="boundary">개인 프로젝트(2026) · 단변량 관리도 기반의 원리 구현입니다. 연속·추세 규칙은 삭제하지 않고 주의 표시로 남겨, 스파이크 주입 시나리오의 주입 7회를 모두 포착함을 확인했습니다.</div>
+  </div>
+</section>
+
+<!-- ============ Pargan ============ -->
+<section id="pargan">
+  <div class="sec-head"><span class="badge">축 2 · AI</span><h2>융합연구학점제 AI NPC 게임 개발</h2></div>
+  <p class="sec-sub">LLM 기반 캐릭터와 자유 대화하며 물리 법칙을 발견하는 교육용 어드벤처 게임(Unity, 플레이타임 약 1시간).
+  3인 팀에서 <b>기획과 클라이언트 개발·통합</b>을 맡았습니다. 프롬프트만으로는 캐릭터가 세계관을 벗어나는 문제를,
+  입력 의도를 먼저 판단하는 <b>LLM as a Router</b> 구조로 팀과 함께 재설계했고, 저는 AI 응답이 검증을 거쳐
+  게임 상태로 안전하게 반영되는 클라이언트 런타임을 만들었습니다. 성과보고회 시연으로 포스터발표상을 받았습니다.</p>
+
+  <div class="shots">
+    <figure><img src="assets/pargan-router.jpg" alt="LLM as a Router 구조 — 자유 입력, 의도 판단, 분기 응답, 시스템 검증 및 Unity 상태 갱신" loading="lazy">
+      <figcaption>Router 구조 — 자유 입력 → 의도 판단 → 분기 응답 → <b>시스템 검증 및 상태 갱신</b>(담당 파트)</figcaption></figure>
+    <figure><img src="assets/pargan-guardrail.jpg" alt="LLM Router의 탈옥 방지 원리" loading="lazy">
+      <figcaption>탈옥성 입력도 의도 라우팅 단계에서 세계관 안으로 처리하는 가드레일</figcaption></figure>
+    <figure class="shot-wide"><img src="assets/pargan-result.jpg" alt="최종 결과물 — 포인트앤클릭 맵, 미니게임, 연출 시스템" loading="lazy">
+      <figcaption>최종 결과물 — 포인트앤클릭 맵 · 미니게임 · 만화적 연출 시스템</figcaption></figure>
+    <figure class="shot-wide">
+      <video controls preload="none" poster="assets/pargan-poster.jpg" src="assets/pargan-play.mp4"></video>
+      <figcaption>플레이 영상(부산인디커넥트 제출 빌드) — 재생 시에만 로드됩니다</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <h3>모델 결정 — 같은 조건에서 비교하고 근거로 선택</h3>
+    <p style="font-size:13.5px; color:var(--ink-2)">상용 LLM(GPT-4o)과 로컬 LLM(Llama 3.1 8B)을 같은 실험 조건(호출 횟수·지연)에서 비교해 적용 모델을 결정했습니다.
+    비용·품질·지연의 트레이드오프를 수치로 확인한 뒤 선택하는 방식은, 클라우드 생성형 AI를 서비스에 쓸 때 그대로 적용됩니다.</p>
+    <a class="btn ghost" href="assets/award-poster.jpg" target="_blank" rel="noopener">포스터발표상 수상 확인서 보기 ↗</a>
+    <div class="boundary">3인 팀 프로젝트(2026-1) · Router 구조와 모델 비교는 팀 공동 설계, LLM 백엔드는 팀원 담당, 기획·클라이언트 런타임·통합이 본인 담당입니다. 수상 확인서의 생년월일·학번은 가렸습니다.</div>
+  </div>
+</section>
+
+<!-- ============ Obsidian ============ -->
+<section id="obsidian">
+  <div class="sec-head"><span class="badge">축 2 · AI</span><h2>옵시디언 기반 AI 협업 문서 체계 구축</h2></div>
+  <p class="sec-sub">AI가 조사와 코딩을 연속해 수행하면서 "무엇을 믿고 다음 일을 맡길지"가 문제가 됐습니다.
+  옵시디언에 네 개의 폴더 계층을 만들어 <b>AI가 고쳐도 되는 곳과 사람이 결정하는 곳을 규칙으로 분리</b>하고,
+  문서를 서로 연결해 모든 주장의 출처를 추적할 수 있게 했습니다. 지금도 학업·프로젝트 전체를 이 체계로 운영 중입니다.</p>
+
+  <div class="duo">
+    <div class="pane"><h4>사람이 결정하는 영역</h4><ul>
+      <li><b>원문 자료</b> — 읽기 전용. 요약본으로 대체하지 않음</li>
+      <li><b>최종 판단 기록</b> — 소유자만 작성. AI는 수정 불가</li>
+    </ul></div>
+    <div class="pane ai"><h4>AI에 맡기는 영역</h4><ul>
+      <li><b>AI가 정리한 지식</b> — 작성·갱신·링크 유지보수 위임</li>
+      <li><b>공동 작업 문서</b> — 저자를 구분해 함께 편집</li>
+    </ul></div>
+  </div>
+  <div class="flow">
+    <div class="step"><b>권한 규칙</b>폴더별로 수정 주체를 고정</div><span class="arrow">→</span>
+    <div class="step"><b>출처 추적</b>주장마다 원문으로 링크 연결</div><span class="arrow">→</span>
+    <div class="step hi"><b>검증 후 수용</b>AI 산출물은 확인을 거쳐 판단에 반영</div>
+  </div>
+  <div class="card">
+    <div class="boundary" style="border-top:none; padding-top:0">개인 운영 체계(2026~현재) · 이 구조로 학업과 프로젝트를 병행하며 4학년 1학기 전 과목 A+(평점 4.5)와 성적우수장학금을 받았습니다. 사내 문서 기반 AI 서비스가 풀어야 하는 문제 — 원문과 AI 정리의 분리, 수정 권한, 출처 추적 — 를 개인 규모에서 먼저 운영해 본 경험입니다.</div>
+  </div>
+</section>
+
+<!-- ============ Hancell ============ -->
+<section id="hancell">
+  <div class="sec-head"><span class="badge">축 2 · AI</span><h2>검찰청 행정업무 자동화 스크립트 개발</h2></div>
+  <p class="sec-sub">검찰청 사회복무 중 우편물 장부의 수신처 입력이 반복 업무였습니다. 처리 매뉴얼을 분석해
+  문서 유형과 수신처의 대응 규칙부터 정리한 뒤, 한셀 기준표와 자동입력 스크립트로 구현했습니다.
+  자동화를 포함한 업무 기여를 인정받아 지청장 표창을 받았습니다(2025.12).</p>
+
+  <div class="duo">
+    <div class="pane"><h4>기준표 — 데이터 (담당자가 직접 수정)</h4><ul>
+      <li>문서 제목·유형 → 수신처 대응 규칙을 표로 분리</li>
+      <li>검사실 구성이 바뀌면 <b>표만 고치면 됨</b></li>
+    </ul></div>
+    <div class="pane"><h4>스크립트 — 로직 (수정 불필요)</h4><ul>
+      <li>장부에 제목을 입력하면 기준표를 조회해 수신처 자동 입력</li>
+      <li>프로그램을 모르는 담당자도 유지보수 가능</li>
+    </ul></div>
+  </div>
+  <div class="card">
+    <div class="boundary" style="border-top:none; padding-top:0">사회복무(2024~2025) · 현업 담당자가 스스로 유지할 수 있도록 데이터와 로직을 분리한 설계가 핵심입니다. 후임자에게 인수인계해 복무 종료 후에도 사용되고 있다고 전해 들었습니다. 기관 내부 자료는 게재하지 않습니다.</div>
+  </div>
+</section>
+
+<!-- ============ Funding ============ -->
+<section id="funding">
+  <div class="sec-head"><span class="badge">축 1 · 데이터</span><h2>보드게임 '회식으로 이사까지' 크라우드펀딩</h2></div>
+  <p class="sec-sub">자작 보드게임의 텀블벅 펀딩(2024.12). 단 한 건의 후원도 없는 상태에서 생산량을 정하고
+  약 430만 원을 선투입해야 했기에, 감이 아니라 데이터로 수요를 예측하고 원가 구조를 분석해 400세트 생산을 결정했습니다.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n">183%</div><div class="l">펀딩 달성률</div></div>
+    <div class="stat"><div class="n">333명</div><div class="l">후원자</div></div>
+    <div class="stat"><div class="n">약 825만 원</div><div class="l">모금액</div></div>
+    <div class="stat"><div class="n">400세트</div><div class="l">생산·배송 완료</div><div class="s">배송 약 350건 + 행사 판매</div></div>
+  </div>
+
+  <div class="card">
+    <h3>수요예측 — 유사작 데이터로 세운 생산량 근거</h3>
+    <div class="flow">
+      <div class="step"><b>표본 수집</b>직전 1년 · 관심 200건 이상 유사작에서 바이럴 제외 55개</div><span class="arrow">→</span>
+      <div class="step"><b>전환율 분석</b>관심 수 대비 후원자 비율 분포</div><span class="arrow">→</span>
+      <div class="step"><b>수요 추산</b>알림신청 394건 × 관심 증가 20% 가정 × 후원 전환 65% ≈ 307부</div><span class="arrow">→</span>
+      <div class="step hi"><b>400세트 결정</b>품절 위험 · 행사 판매 · 한계비용 반영</div>
+    </div>
+  </div>
+
+  <div class="shots">
+    <figure><img src="assets/fund-quote200.jpg" alt="인쇄소 견적 200부 단가표" loading="lazy">
+      <figcaption>200부 견적 — 개당 20,646원</figcaption></figure>
+    <figure><img src="assets/fund-quote500.jpg" alt="인쇄소 견적 500부 단가표" loading="lazy">
+      <figcaption>500부 견적 — 개당 10,371원. 고정비 지배 구조 확인이 증산 판단의 근거</figcaption></figure>
+    <figure class="shot-wide"><img src="assets/fund-flowchart.jpg" alt="펀딩 업무 진행 관리 flow chart" loading="lazy">
+      <figcaption>진행 관리 flow chart — 업무 의존관계, 상태 구분, "달성률 150% 시 착수" 같은 조건부 계획과 검수 게이트</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="boundary" style="border-top:none; padding-top:0">3인 팀 프로젝트 · 수요예측과 생산량 결정, 원가 분석, 진행 관리, 주요 자재 발주·샘플 검수가 본인 담당입니다. 수치는 텀블벅 공개 페이지와 회계 시트 기준입니다.</div>
+  </div>
+</section>
+
+<!-- ============ DDMK ============ -->
+<section id="ddmk">
+  <div class="sec-head"><span class="badge">축 1 · 데이터</span><h2>실거래 데이터 기반 고객 이탈 구조 분석</h2></div>
+  <p class="sec-sub">전공 수업(데이터드리븐마케팅, 2022-1)의 5인 팀 프로젝트. 복합쇼핑몰 실거래 데이터에서
+  <b>테넌트 네트워크 분석과 프로세스 마이닝을 담당</b>해, 고객 동선 81개 유형을 분석하고 "이탈률 &gt; 재방문율 &gt; 전환율"
+  구조와 중심 테넌트의 부재를 정량화했습니다. 이 근거로 Anchor Tenant 도입과 멤버십 개선안을 제안했습니다.</p>
+
+  <div class="shots">
+    <figure><img src="assets/ddmk-network.jpg" alt="테넌트 네트워크 분석" loading="lazy">
+      <figcaption>네트워크 분석 — 키즈·중식·여성패션 카테고리 간 연관 구조(담당 파트)</figcaption></figure>
+    <figure><img src="assets/ddmk-mining.jpg" alt="프로세스 마이닝 — 동선 variants 81개" loading="lazy">
+      <figcaption>프로세스 마이닝 — 동선 variants 81개에서 이탈 구조 정량화(담당 파트)</figcaption></figure>
+  </div>
+  <div class="card">
+    <div class="boundary" style="border-top:none; padding-top:0">5인 팀 과제 · 게재한 분석·시각화는 본인 담당 파트입니다. 고객 식별자는 원 데이터부터 익명 코드입니다. Power BI 활용.</div>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <b>손민수</b> · 성균관대학교 시스템경영공학과 (인공지능융합 복수전공)<br>
+  본 페이지의 수치는 원 자료(시뮬레이션 로그 · 회계 시트 · 발표자료 · 공개 펀딩 페이지)에서 검증된 값입니다.
+  팀 산출물에는 담당 범위를 표기했으며, 개인정보와 기관 내부 자료는 게재하지 않습니다.
+</div></footer>
+
+</body>
+</html>
