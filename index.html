@@ -260,36 +260,48 @@ footer b{color:var(--ink-2)}
 
 <!-- ============ TPD ============ -->
 <section id="tpd">
-  <div class="sec-head"><span class="badge">축 2 · AI · 본선 진행 중</span><h2>표적단백질 분해제 후보물질 탐색 에이전트 서비스 기획</h2></div>
-  <p class="sec-sub">AI 신약개발 경진대회 본선(2인 팀, 2026.9~10 진행 중). 표적의 문헌 근거 수집부터 후보 설계·계산·연구자 검토까지 잇는
-  에이전트 서비스를 기획하고 있습니다. AI가 후보를 제안해도 <b>연구 자원을 투입할 판단은 연구자의 몫</b> —
+  <div class="sec-head"><span class="badge">축 2 · AI · 본선 개발 중</span><h2>표적단백질 분해제 후보물질 탐색 에이전트 서비스 기획</h2></div>
+  <p class="sec-sub">표적의 문헌 근거 수집부터 후보 설계·과학 계산·연구자 검토까지 하나의 절차로 잇는 에이전트 서비스입니다.
+  이 기획으로 AI 신약개발 경진대회 <b>예선 8위(504팀)로 본선에 진출</b>했고, 현재 2인 팀으로 개발하고 있습니다.
+  AI가 후보를 제안해도 <b>연구 자원을 투입할 판단은 연구자의 몫</b> —
   그 신뢰를 화면이 아니라 구조로 설계하는 것이 이 기획의 중심입니다.</p>
 
-  <div class="flow">
-    <div class="step"><b>문헌 근거 수집</b>원문 출처·버전을 보존해 저장</div><span class="arrow">→</span>
-    <div class="step"><b>LLM 역할 분리</b>분석·계획·비판·보고를 나눠 교차 견제</div><span class="arrow">→</span>
-    <div class="step"><b>코드 검증</b>규칙 점검과 변경 전후 영향 미리보기</div><span class="arrow">→</span>
-    <div class="step hi"><b>연구자 승인 게이트</b>사람의 결정을 구조에 내장</div><span class="arrow">→</span>
-    <div class="step hi"><b>실행·기록</b>승인 이력과 함께 추적 가능하게</div>
+  <div class="stats">
+    <div class="stat"><div class="n">8위 / 504팀</div><div class="l">예선 순위 → 본선 진출</div></div>
+    <div class="stat"><div class="n">4개 역할</div><div class="l">LLM 에이전트 분리</div><div class="s">문헌 분석 · 계획 · 비판 · 보고</div></div>
+    <div class="stat"><div class="n">3곳</div><div class="l">연구자 승인 게이트</div><div class="s">근거·범위 → 후보 선택 → 최종 보고</div></div>
+    <div class="stat"><div class="n">개발 중</div><div class="l">본선 2026.9~10</div><div class="s">기획·계약 설계 + 초기 구간 시제품</div></div>
   </div>
 
   <div class="card">
-    <h3>신뢰를 만드는 세 가지 설계 원칙</h3>
-    <div class="duo" style="margin-top:6px">
-      <div class="pane"><h4>근거 없는 단정 차단</h4><ul>
-        <li>관측·예측·가정·판단을 구분해 다룸</li>
-        <li><b>자료에 없는 실험값을 만들지 않음</b></li>
+    <h3>파이프라인 아키텍처 — AI의 제안이 정책을 직접 바꾸지 못하는 구조</h3>
+    <div class="flow">
+      <div class="step"><b>표적 식별</b>표준 식별자로 대상 단백질 확정</div><span class="arrow">→</span>
+      <div class="step"><b>문헌 수집·정규화</b>공개 문헌을 공통 근거 형식으로 — 원문 버전·위치 보존</div><span class="arrow">→</span>
+      <div class="step"><b>LLM 4역할 분석</b>분석·계획·비판·보고로 나눠 교차 견제</div><span class="arrow">→</span>
+      <div class="step"><b>코드 오케스트레이터</b>규칙 점검 · 변경 전후 영향 미리보기 생성</div><span class="arrow">→</span>
+      <div class="step hi"><b>연구자 승인 게이트</b>영향을 확인한 사람이 승인해야 다음 단계로</div><span class="arrow">→</span>
+      <div class="step"><b>후보 설계·계산</b>고비용 연산은 승인 뒤에만 실행</div><span class="arrow">→</span>
+      <div class="step hi"><b>보고·기록</b>모든 결과에 근거 출처와 승인 이력을 연결</div>
+    </div>
+    <div class="duo" style="margin-top:14px">
+      <div class="pane"><h4>내부 — 실제 연구 절차</h4><ul>
+        <li>문헌 탐색, AI 근거 분석, 후보 설계, 과학 계산, 연구자 검토를 수행</li>
+        <li>관측·예측·가정·판단을 구분 — <b>자료에 없는 실험값을 만들지 않음</b></li>
       </ul></div>
-      <div class="pane"><h4>출처가 있는 분석</h4><ul>
-        <li>모든 분석이 원문 출처·버전과 함께 저장</li>
-        <li>근거를 원문까지 되짚을 수 있음</li>
+      <div class="pane ai"><h4>공개 웹 — 검증된 사례 재생</h4><ul>
+        <li>계산·검토를 마친 사례만 선택해 재생 — 저장 후보 비교·근거 열람 제공</li>
+        <li><b>방문자의 클릭을 실제 연구자 승인으로 기록하지 않음</b></li>
       </ul></div>
     </div>
-    <div class="pane ai" style="margin-top:12px"><h4>사람이 쥐는 실행권</h4><ul>
-      <li><b>고비용 연산과 후보 적용은 연구자 승인 뒤에만 실행</b></li>
-      <li>문헌 요약이나 AI 제안이 정책·승인을 직접 바꾸지 못함</li>
-    </ul></div>
-    <div class="boundary">2인 팀 · 본선 진행 중(제출 2026.10) — 기획·인터페이스 설계와 일부 구간 시제품 단계입니다. 대회가 진행 중이므로 구체 방법론·표적·수치·저장소는 게재하지 않습니다.</div>
+  </div>
+
+  <div class="card">
+    <h3>현재 상태</h3>
+    <p style="font-size:13.5px; color:var(--ink-2)">표적 식별과 문헌 수집 구간은 로컬 시제품으로 동작하며, 모듈 간 공통 스키마 계약을 먼저 정의해
+    2인 분업으로 개발하고 있습니다(본선 제출 2026.10). 문서 작성·계약 통과·코드 동작·과학 검증을 각각 다른 상태로 관리해,
+    되어 있는 것과 남은 것을 구분합니다.</p>
+    <div class="boundary">2인 팀 프로젝트 · 서비스 기획과 신뢰 구조 설계를 주도. 대회가 진행 중이므로 표적명·과학 방법론 세부·성능 수치·저장소는 대회 종료까지 게재하지 않습니다.</div>
   </div>
 </section>
 
@@ -319,7 +331,6 @@ footer b{color:var(--ink-2)}
 
   <div class="card">
     <h3>비교군 55개 — 수집과 검증의 로직</h3>
-    <p style="font-size:12.5px; color:var(--ink-3)">아래 상세 분석은 2024년 12월 결정 당시 수행한 분석을, 이후 텀블벅 공개 데이터로 복원·정식화해 정리한 기록입니다(비교군 수치는 복원 시점 수집 기준).</p>
     <div class="funnel">
       <div class="frow"><span class="fnum">2,334</span><span>텀블벅 보드게임·TRPG 공개 목록 117페이지 전수 수집</span></div>
       <div class="frow"><span class="fnum">695</span><span>기준 프로젝트(2024.12) 시작 전에 종료된 프로젝트만</span></div>
