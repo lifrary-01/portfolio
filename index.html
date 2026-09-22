@@ -232,6 +232,9 @@ flowchart LR
   입력 의도를 먼저 판단하는 <b>LLM as a Router</b> 구조로 팀과 함께 재설계했고, 저는 AI 응답이 검증을 거쳐
   게임 상태로 안전하게 반영되는 클라이언트 런타임을 만들었습니다. 성과보고회 시연으로 포스터발표상을 받았습니다.</p>
 
+  <figure style="margin-top:18px"><img src="assets/pargan-cover.jpg" alt="AXIOM — 신뢰 가능한 AI NPC 기반의 물리학 교육용 어드벤처 게임" loading="lazy" style="border-radius:12px; border:1px solid var(--border); width:100%; display:block">
+    <figcaption>성과보고회 발표자료 표지 — 팀 AXIOM, 2026-1 융합연구학점제</figcaption></figure>
+
   <div class="card">
     <h3>LLM as a Router — 자유 입력을 세계관 밖으로 내보내지 않는 설계</h3>
     <div class="mmd"><pre class="mermaid">
@@ -289,18 +292,32 @@ flowchart TB
 <section id="obsidian">
   <div class="sec-head"><span class="badge">축 2 · AI</span><h2>옵시디언 기반 AI 협업 문서 체계 구축</h2></div>
   <p class="sec-sub">AI가 조사와 코딩을 연속해 수행하면서 "무엇을 믿고 다음 일을 맡길지"가 문제가 됐습니다.
-  옵시디언에 네 개의 폴더 계층을 만들어 <b>AI가 고쳐도 되는 곳과 사람이 결정하는 곳을 규칙으로 분리</b>하고,
-  문서를 서로 연결해 모든 주장의 출처를 추적할 수 있게 했습니다. 지금도 학업·프로젝트 전체를 이 체계로 운영 중입니다.</p>
+  안드레이 카파시가 제안한 <b>raw/wiki 구분에 착안해 collaboration·origin 계층을 더한 4계층 권한 체계</b>를 옵시디언에 설계하고,
+  AI 코딩 에이전트가 볼트를 직접 읽고 쓰도록 연결해 조사 → 정리 → 공동 작업 → 판단 기록이 한 곳에서 순환하는
+  <b>Second Brain</b>을 구축했습니다. 문서 간 링크로 모든 주장의 출처를 추적하며, 지금도 학업·프로젝트 전체를 이 체계로 운영 중입니다.</p>
 
-  <div class="duo">
-    <div class="pane"><h4>사람이 결정하는 영역</h4><ul>
-      <li><b>원문 자료</b> — 읽기 전용. 요약본으로 대체하지 않음</li>
-      <li><b>최종 판단 기록</b> — 소유자만 작성. AI는 수정 불가</li>
-    </ul></div>
-    <div class="pane ai"><h4>AI에 맡기는 영역</h4><ul>
-      <li><b>AI가 정리한 지식</b> — 작성·갱신·링크 유지보수 위임</li>
-      <li><b>공동 작업 문서</b> — 저자를 구분해 함께 편집</li>
-    </ul></div>
+  <div class="card">
+    <h3>4계층 권한 구조 — AI가 빨라져도 통제가 유지되는 볼트</h3>
+    <div class="mmd"><pre class="mermaid">
+flowchart LR
+  ME["사람(소유자)"]
+  AI["AI 코딩 에이전트<br/>볼트에 직접 연결"]
+  subgraph SB["옵시디언 볼트 — Second Brain · 4계층 권한"]
+    RAW["raw<br/>원문 자료 원본"]
+    WIKI["wiki<br/>AI가 정리한 지식"]
+    COL["collaboration<br/>사람×AI 공동 문서"]
+    ORG["origin<br/>사람의 사고·판단 기록"]
+  end
+  AI -.->|"읽기만 — 요약으로 대체 금지"| RAW
+  AI -->|"작성·갱신·링크 유지보수"| WIKI
+  AI -->|"저자를 구분해 편집"| COL
+  AI -.->|"읽기만 — 수정 금지"| ORG
+  ME -->|"직접 작성"| ORG
+  ME -->|"하이라이트로 질문·지시"| WIKI
+  RAW -->|"출처 링크"| WIKI
+  ORG -->|"파생 개념 링크"| WIKI
+    </pre></div>
+    <div class="mmd-cap">계층마다 수정 주체를 고정했습니다 — AI는 wiki를 맡아 지식을 정리·갱신하고, 사람의 사고(origin)와 원문(raw)은 읽기만 합니다. 사람은 하이라이트로 wiki에 질문·지시를 남기고, AI는 다음 갱신 때 반영합니다.</div>
   </div>
   <div class="flow">
     <div class="step"><b>권한 규칙</b>폴더별로 수정 주체를 고정</div><span class="arrow">→</span>
@@ -316,21 +333,27 @@ flowchart TB
 <section id="hancell">
   <div class="sec-head"><span class="badge">축 2 · AI</span><h2>검찰청 행정업무 자동화 스크립트 개발</h2></div>
   <p class="sec-sub">검찰청 사회복무 중 우편물 장부의 수신처 입력이 반복 업무였습니다. 처리 매뉴얼을 분석해
-  문서 유형과 수신처의 대응 규칙부터 정리한 뒤, 한셀 기준표와 자동입력 스크립트로 구현했습니다.
-  자동화를 포함한 업무 기여를 인정받아 지청장 표창을 받았습니다(2025.12).</p>
+  문서 유형과 수신처의 대응 규칙부터 정리한 뒤, <b>AI를 활용해 한셀 스크립트를 빠르게 개발</b>하는 방식으로
+  입력 자동화를 구현했습니다. 자동화를 포함한 업무 기여를 인정받아 지청장 표창을 받았습니다(2025.12).</p>
 
   <div class="duo">
-    <div class="pane"><h4>기준표 — 데이터 (담당자가 직접 수정)</h4><ul>
-      <li>문서 제목·유형 → 수신처 대응 규칙을 표로 분리</li>
-      <li>검사실 구성이 바뀌면 <b>표만 고치면 됨</b></li>
+    <div class="pane ai"><h4>자동 입력 — 스크립트 기능 2가지</h4><ul>
+      <li><b>서류별 담당 부서 기준표</b> — 서류 내용(제목·유형)을 입력하면 담당 부서가 자동으로 입력</li>
+      <li><b>검사실명 ↔ 검사실 호수 상호 완성</b> — 우편물에 둘 중 하나만 적힌 경우가 많아, 하나만 입력하면 나머지가 자동으로 채워지도록 개발</li>
     </ul></div>
-    <div class="pane"><h4>스크립트 — 로직 (수정 불필요)</h4><ul>
-      <li>장부에 제목을 입력하면 기준표를 조회해 수신처 자동 입력</li>
-      <li>프로그램을 모르는 담당자도 유지보수 가능</li>
+    <div class="pane"><h4>담당자가 유지하는 설계</h4><ul>
+      <li><b>기준표(데이터)와 스크립트(로직) 분리</b> — 검사실 구성이 바뀌면 표만 수정</li>
+      <li>프로그램을 모르는 담당자도 직접 유지 — 후임자에게 인수인계해 복무 종료 후에도 사용</li>
     </ul></div>
   </div>
+
+  <div class="shots">
+    <figure style="max-width:440px"><img src="assets/award-commendation.jpg" alt="수원지방검찰청 성남지청장 표창장 (제2025-7호)" loading="lazy">
+      <figcaption>지청장 표창장 (제2025-7호, 2025.12.31)</figcaption></figure>
+  </div>
+
   <div class="card">
-    <div class="boundary" style="border-top:none; padding-top:0">사회복무(2024~2025) · 현업 담당자가 스스로 유지할 수 있도록 데이터와 로직을 분리한 설계가 핵심입니다. 후임자에게 인수인계해 복무 종료 후에도 사용되고 있다고 전해 들었습니다. 기관 내부 자료는 게재하지 않습니다.</div>
+    <div class="boundary" style="border-top:none; padding-top:0">사회복무(2024~2025) · 현업 담당자가 스스로 유지할 수 있도록 데이터와 로직을 분리한 설계가 핵심입니다. 장부·매뉴얼 등 기관 내부 자료는 게재하지 않습니다(표창장은 본인 수여 증서).</div>
   </div>
 </section>
 
