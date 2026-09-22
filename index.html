@@ -111,6 +111,40 @@ figcaption{font-size:12.5px; color:var(--ink-3); margin-top:6px}
 .mmd pre.mermaid svg{display:block; margin:0 auto}
 .mmd-cap{font-size:12.5px; color:var(--ink-3); padding:6px 6px 8px}
 
+/* Second Brain: readable on both desktop and mobile */
+.explain{font-size:14px; color:var(--ink-2)}
+.connection{display:grid; grid-template-columns:1fr auto 1.2fr auto 1fr; gap:12px; align-items:center; margin:18px 0}
+.connection-node{padding:16px 12px; border:1px solid var(--border); border-radius:10px; text-align:center; background:var(--bg); font-size:13px; color:var(--ink-2)}
+.connection-node b{display:block; color:var(--ink); margin-bottom:4px; font-size:14px}
+.connection-node.shared{border-color:var(--accent-line); background:var(--accent-soft)}
+.connection-arrow{color:var(--accent); font-size:22px; text-align:center}
+.layer-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px}
+.layer{padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--bg)}
+.layer.extended{border-color:var(--accent-line); background:var(--accent-soft)}
+.layer .eyebrow{font-size:11.5px; color:var(--ink-2); letter-spacing:.02em}
+.layer h4{margin:6px 0; font-size:17px}
+.layer h4 code{font-size:15px; color:var(--accent)}
+.layer p{font-size:13px; color:var(--ink-2)}
+.layer .owner{display:block; padding-top:10px; margin-top:10px; border-top:1px solid var(--border); font-size:12px; font-weight:700}
+.work-loop{list-style:none; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:16px; counter-reset:work}
+.work-loop li{padding:15px 13px; background:var(--bg); border:1px solid var(--border); border-radius:10px; font-size:13px; color:var(--ink-2); counter-increment:work}
+.work-loop li::before{content:"0" counter(work); display:block; color:var(--accent); font-weight:800; font-size:12px; margin-bottom:6px}
+.work-loop b{display:block; color:var(--ink); margin-bottom:5px; font-size:14px}
+.reuse{padding:12px 16px; margin-top:12px; border-left:3px solid var(--accent); background:var(--accent-soft); font-size:13px; color:var(--ink-2)}
+.source-link{color:var(--accent); text-underline-offset:3px}
+.automation-row{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:center; margin-top:14px}
+.automation-cell{font-size:13px; padding:13px; border:1px solid var(--border); border-radius:10px; background:var(--bg)}
+.automation-cell b{display:block; font-size:12px; color:var(--ink-2); margin-bottom:4px}
+.automation-cell.result{background:var(--accent-soft); border-color:var(--accent-line)}
+.award-layout{display:grid; grid-template-columns:minmax(0,320px) 1fr; align-items:center; gap:24px}
+@media(max-width:640px){
+  .connection,.automation-row{grid-template-columns:1fr; gap:7px}
+  .connection-arrow{transform:rotate(90deg); line-height:1.1}
+  .layer-grid,.award-layout{grid-template-columns:1fr}
+  .work-loop{grid-template-columns:1fr 1fr}
+  .award-layout figure{max-width:320px; margin:auto}
+}
+
 /* funnel */
 .funnel{margin-top:14px}
 .frow{display:flex; align-items:baseline; gap:12px; padding:7px 0; border-top:1px solid var(--border); font-size:13px; color:var(--ink-2)}
@@ -232,7 +266,7 @@ flowchart LR
   입력 의도를 먼저 판단하는 <b>LLM as a Router</b> 구조로 팀과 함께 재설계했고, 저는 AI 응답이 검증을 거쳐
   게임 상태로 안전하게 반영되는 클라이언트 런타임을 만들었습니다. 성과보고회 시연으로 포스터발표상을 받았습니다.</p>
 
-  <figure style="margin-top:18px"><img src="assets/pargan-cover.jpg" alt="AXIOM — 신뢰 가능한 AI NPC 기반의 물리학 교육용 어드벤처 게임" loading="lazy" style="border-radius:12px; border:1px solid var(--border); width:100%; display:block">
+  <figure style="margin-top:18px"><img src="assets/pargan-cover.jpg" alt="AXIOM — 신뢰 가능한 AI NPC 기반의 물리학 교육용 어드벤처 게임" loading="lazy" width="1600" height="900" style="height:auto; border-radius:12px; border:1px solid var(--border); width:100%; display:block">
     <figcaption>성과보고회 발표자료 표지 — 팀 AXIOM, 2026-1 융합연구학점제</figcaption></figure>
 
   <div class="card">
@@ -291,65 +325,108 @@ flowchart TB
 <!-- ============ Obsidian ============ -->
 <section id="obsidian">
   <div class="sec-head"><span class="badge">축 2 · AI</span><h2>옵시디언 기반 AI 협업 문서 체계 구축</h2></div>
-  <p class="sec-sub">AI가 조사와 코딩을 연속해 수행하면서 "무엇을 믿고 다음 일을 맡길지"가 문제가 됐습니다.
-  안드레이 카파시가 제안한 <b>raw/wiki 구분에 착안해 collaboration·origin 계층을 더한 4계층 권한 체계</b>를 옵시디언에 설계하고,
-  AI 코딩 에이전트가 볼트를 직접 읽고 쓰도록 연결해 조사 → 정리 → 공동 작업 → 판단 기록이 한 곳에서 순환하는
-  <b>Second Brain</b>을 구축했습니다. 문서 간 링크로 모든 주장의 출처를 추적하며, 지금도 학업·프로젝트 전체를 이 체계로 운영 중입니다.</p>
+  <p class="sec-sub">AI와 조사·개발을 반복하면서 결과가 대화마다 흩어지고, 원문의 사실과 AI의 해석, 제 판단을 구분하기 어려워졌습니다.
+  안드레이 카파시의 <b>raw/wiki 구조에 착안해 collaboration·origin을 더한 Second Brain</b>을 옵시디언에 구축했습니다.
+  자료와 작업 맥락을 문서로 축적하고 AI 코딩 에이전트가 다음 작업에서 다시 참조하게 해, 자료를 다시 찾고 배경을 반복 설명하는 수고를 줄였습니다.</p>
 
   <div class="card">
-    <h3>4계층 권한 구조 — AI가 빨라져도 통제가 유지되는 볼트</h3>
-    <div class="mmd"><pre class="mermaid">
-flowchart LR
-  ME["사람(소유자)"]
-  AI["AI 코딩 에이전트<br/>볼트에 직접 연결"]
-  subgraph SB["옵시디언 볼트 — Second Brain · 4계층 권한"]
-    RAW["raw<br/>원문 자료 원본"]
-    WIKI["wiki<br/>AI가 정리한 지식"]
-    COL["collaboration<br/>사람×AI 공동 문서"]
-    ORG["origin<br/>사람의 사고·판단 기록"]
-  end
-  AI -.->|"읽기만 — 요약으로 대체 금지"| RAW
-  AI -->|"작성·갱신·링크 유지보수"| WIKI
-  AI -->|"저자를 구분해 편집"| COL
-  AI -.->|"읽기만 — 수정 금지"| ORG
-  ME -->|"직접 작성"| ORG
-  ME -->|"하이라이트로 질문·지시"| WIKI
-  RAW -->|"출처 링크"| WIKI
-  ORG -->|"파생 개념 링크"| WIKI
-    </pre></div>
-    <div class="mmd-cap">계층마다 수정 주체를 고정했습니다 — AI는 wiki를 맡아 지식을 정리·갱신하고, 사람의 사고(origin)와 원문(raw)은 읽기만 합니다. 사람은 하이라이트로 wiki에 질문·지시를 남기고, AI는 다음 갱신 때 반영합니다.</div>
+    <h3>연결 방식 — 사람과 AI가 같은 문서에서 작업을 이어갑니다</h3>
+    <div class="connection" aria-label="AI 코딩 에이전트와 옵시디언이 같은 로컬 마크다운 볼트를 읽고 쓰는 구조">
+      <div class="connection-node"><b>AI 코딩 에이전트</b>규약을 읽고<br>조사·정리·초안 작성</div>
+      <span class="connection-arrow" aria-hidden="true">↔</span>
+      <div class="connection-node shared"><b>로컬 Markdown 볼트</b>원문 · 지식 · 작업 기록 · 판단<br>문서 간 링크로 맥락 연결</div>
+      <span class="connection-arrow" aria-hidden="true">↔</span>
+      <div class="connection-node"><b>사람 · Obsidian</b>근거 확인·질문 표시<br>수정 방향과 최종 판단</div>
+    </div>
+    <p class="explain">에이전트의 작업 폴더를 볼트에 연결해 Markdown 파일을 직접 읽고 쓰게 하고,
+    <b>Obsidian CLI로 문서·백링크를 조회</b>할 수 있도록 운영했습니다.
+    폴더별 편집 주체와 출처 표기 규칙을 문서화해, 같은 자료를 보면서도 누가 쓴 내용인지 구분했습니다.</p>
   </div>
-  <div class="flow">
-    <div class="step"><b>권한 규칙</b>폴더별로 수정 주체를 고정</div><span class="arrow">→</span>
-    <div class="step"><b>출처 추적</b>주장마다 원문으로 링크 연결</div><span class="arrow">→</span>
-    <div class="step hi"><b>검증 후 수용</b>AI 산출물은 확인을 거쳐 판단에 반영</div>
+
+  <div class="card">
+    <h3>4개 계층 — 원문·AI의 정리·공동 작업·내 판단을 구분합니다</h3>
+    <div class="layer-grid">
+      <div class="layer"><span class="eyebrow">카파시의 raw/wiki 개념에서 출발</span><h4><code>raw/</code> 원문 자료</h4>
+        <p>논문·기사·참고 자료의 원본을 보존합니다. 요약이 의심스러울 때 돌아가 확인하는 기준점입니다.</p>
+        <span class="owner">원문 보존 · AI는 읽기만</span></div>
+      <div class="layer"><span class="eyebrow">카파시의 raw/wiki 개념에서 출발</span><h4><code>wiki/</code> 축적된 지식</h4>
+        <p>AI가 개념을 정리하고 관련 문서를 연결합니다. 출처 링크를 남겨 원문까지 되짚을 수 있게 합니다.</p>
+        <span class="owner">AI가 작성·갱신 · 사람은 질문·검토</span></div>
+      <div class="layer extended"><span class="eyebrow">직접 확장한 계층</span><h4><code>collaboration/</code> 공동 작업</h4>
+        <p>분석·기획·초안과 피드백을 함께 다룹니다. 사람과 AI의 작성 부분을 구분해 수정 이유와 작업 맥락을 남깁니다.</p>
+        <span class="owner">사람 + AI 공동 편집 · 저자 구분</span></div>
+      <div class="layer extended"><span class="eyebrow">직접 확장한 계층</span><h4><code>origin/</code> 나의 사고와 판단</h4>
+        <p>제가 직접 쓴 구상과 판단을 보존합니다. AI의 초안을 이곳으로 옮겨 제 생각으로 표시하지 않습니다.</p>
+        <span class="owner">사람만 작성 · AI는 읽기만</span></div>
+    </div>
+    <p class="boundary">편집 범위는 에이전트가 따르는 운영 규약으로 관리합니다. 원문과 개인 판단은 그대로 두고,
+    필요한 개념을 wiki에 별도로 정리해 연결합니다.
+    착안한 원형: <a class="source-link" href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">Andrej Karpathy · LLM Wiki ↗</a></p>
+  </div>
+
+  <div class="card">
+    <h3>작업 흐름 — 한 번의 조사와 검토가 다음 작업에 남도록</h3>
+    <ol class="work-loop">
+      <li><b>자료 수집</b>원문을 raw에 보관하고 AI가 참조할 자료를 정합니다.</li>
+      <li><b>지식 연결</b>wiki에 개념과 출처를 정리하고 관련 문서로 연결합니다.</li>
+      <li><b>초안·피드백</b>collaboration에서 작업하며 사람이 남긴 질문과 수정 방향을 반영합니다.</li>
+      <li><b>검토·판단</b>원문과 대조해 수용 여부를 결정하고, 제 판단은 직접 기록합니다.</li>
+    </ol>
+    <div class="reuse"><b>↩ 다음 작업에서 재사용</b> — AI가 관련 문서와 작업 기록을 다시 읽고 시작합니다.
+    반복 설명·자료 재탐색·초안 정리에 드는 수고를 줄이고, 저는 근거 검증과 의사결정에 집중했습니다.</div>
   </div>
   <div class="card">
-    <div class="boundary" style="border-top:none; padding-top:0">개인 운영 체계(2026~현재) · 이 구조로 학업과 프로젝트를 병행하며 4학년 1학기 전 과목 A+(평점 4.5)와 성적우수장학금을 받았습니다. 사내 문서 기반 AI 서비스가 풀어야 하는 문제 — 원문과 AI 정리의 분리, 수정 권한, 출처 추적 — 를 개인 규모에서 먼저 운영해 본 경험입니다.</div>
+    <div class="boundary" style="border-top:none; padding-top:0">개인 운영 체계(2026~현재) · AI 협업을 학업과 프로젝트에 활용하며 4학년 1학기 전 과목 A+(평점 4.5)와 성적우수장학금을 받았습니다.
+    현재는 이 4계층 체계로 작업을 이어가고 있습니다. 화면에는 운영 구조만 공개하며 개인 노트 내용은 게재하지 않습니다.</div>
   </div>
 </section>
 
 <!-- ============ Hancell ============ -->
 <section id="hancell">
-  <div class="sec-head"><span class="badge">축 2 · AI</span><h2>검찰청 행정업무 자동화 스크립트 개발</h2></div>
+  <div class="sec-head"><span class="badge">업무 자동화 · AI 개발 보조</span><h2>검찰청 행정업무 자동화 스크립트 개발</h2></div>
   <p class="sec-sub">검찰청 사회복무 중 우편물 장부의 수신처 입력이 반복 업무였습니다. 처리 매뉴얼을 분석해
   문서 유형과 수신처의 대응 규칙부터 정리한 뒤, <b>AI를 활용해 한셀 스크립트를 빠르게 개발</b>하는 방식으로
-  입력 자동화를 구현했습니다. 자동화를 포함한 업무 기여를 인정받아 지청장 표창을 받았습니다(2025.12).</p>
+  입력 자동화를 구현했습니다. 제가 정리한 <b>담당 부서·검사실 기준표를 스크립트가 조회해 수신처를 채우는 방식</b>입니다.
+  자동화를 포함한 업무 기여를 인정받아 지청장 표창을 받았습니다(2025.12).</p>
+
+  <div class="card">
+    <h3>① 서류 내용을 입력하면 담당 부서 자동 입력</h3>
+    <div class="automation-row" aria-label="서류 내용 입력, 담당 부서 기준표 조회, 수신처 자동 입력 순서">
+      <div class="automation-cell"><b>담당자 입력</b>서류 내용 · 제목 · 유형</div><span class="connection-arrow" aria-hidden="true">→</span>
+      <div class="automation-cell"><b>스크립트 처리</b>서류별 담당 부서 기준표 조회</div><span class="connection-arrow" aria-hidden="true">→</span>
+      <div class="automation-cell result"><b>자동 완성</b>해당 담당 부서를 수신처에 입력</div>
+    </div>
+    <p class="explain" style="margin-top:14px">매번 담당 부서를 찾아 입력하던 절차를 기준표로 정리해, 서류 내용만 입력하면 대응하는 부서가 채워지도록 했습니다.</p>
+  </div>
+  <div class="card">
+    <h3>② 검사실명·호수 중 하나만 입력해도 수신처 완성</h3>
+    <div class="automation-row" aria-label="검사실명 또는 호수 입력, 대응표 조회, 나머지 항목 자동 완성 순서">
+      <div class="automation-cell"><b>담당자 입력</b>검사실명 또는 검사실 호수</div><span class="connection-arrow" aria-hidden="true">→</span>
+      <div class="automation-cell"><b>스크립트 처리</b>검사실명 ↔ 호수 대응표 조회</div><span class="connection-arrow" aria-hidden="true">→</span>
+      <div class="automation-cell result"><b>자동 완성</b>입력하지 않은 나머지 항목 채우기</div>
+    </div>
+    <p class="explain" style="margin-top:14px">우편물에 검사실명과 호수가 함께 적혀 있지 않은 경우가 많았습니다.
+    둘 중 확인 가능한 정보 하나만 수신처에 입력하면 나머지를 자동으로 보완하도록 개발했습니다.</p>
+  </div>
 
   <div class="duo">
-    <div class="pane ai"><h4>자동 입력 — 스크립트 기능 2가지</h4><ul>
-      <li><b>서류별 담당 부서 기준표</b> — 서류 내용(제목·유형)을 입력하면 담당 부서가 자동으로 입력</li>
-      <li><b>검사실명 ↔ 검사실 호수 상호 완성</b> — 우편물에 둘 중 하나만 적힌 경우가 많아, 하나만 입력하면 나머지가 자동으로 채워지도록 개발</li>
+    <div class="pane ai"><h4>AI를 활용해 개발 속도 높이기</h4><ul>
+      <li>제가 현업 매뉴얼과 반복 업무를 분석해 <b>입력 규칙과 기준표를 정의</b></li>
+      <li>AI를 개발 보조로 활용해 <b>한셀 자동입력 스크립트를 빠르게 작성</b></li>
     </ul></div>
     <div class="pane"><h4>담당자가 유지하는 설계</h4><ul>
       <li><b>기준표(데이터)와 스크립트(로직) 분리</b> — 검사실 구성이 바뀌면 표만 수정</li>
-      <li>프로그램을 모르는 담당자도 직접 유지 — 후임자에게 인수인계해 복무 종료 후에도 사용</li>
+      <li>프로그램을 모르는 담당자도 직접 유지 — 후임자에게 인수인계했고, 복무 종료 후에도 사용 중이라고 전달받음</li>
     </ul></div>
   </div>
 
-  <div class="shots">
-    <figure style="max-width:440px"><img src="assets/award-commendation.jpg" alt="수원지방검찰청 성남지청장 표창장 (제2025-7호)" loading="lazy">
+  <div class="card award-layout">
+    <figure><a href="assets/award-commendation.jpg" target="_blank" rel="noopener" aria-label="지청장 표창장 크게 보기 (새 탭)"><img src="assets/award-commendation.jpg" alt="수원지방검찰청 성남지청장 표창장 (제2025-7호)" loading="lazy"></a>
       <figcaption>지청장 표창장 (제2025-7호, 2025.12.31)</figcaption></figure>
+    <div><h3>자동화를 포함한 업무 기여로 지청장 표창</h3>
+      <p class="explain">사회복무요원 반장 역할과 성실한 직무 수행에 따른 업무 기여를 인정받았습니다.
+      반복 입력 업무를 개선한 스크립트와 기준표는 후임자에게 인수인계했습니다.</p>
+      <a class="btn ghost" href="assets/award-commendation.jpg" target="_blank" rel="noopener">표창장 크게 보기 ↗</a></div>
   </div>
 
   <div class="card">
