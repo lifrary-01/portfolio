@@ -107,7 +107,8 @@ figcaption{font-size:12.5px; color:var(--ink-3); margin-top:6px}
 /* mermaid 다이어그램 */
 .mmd{background:var(--surface); border:1px solid var(--border); border-radius:12px;
   padding:16px 12px 8px; margin-top:16px; overflow-x:auto}
-.mmd pre.mermaid{margin:0; display:flex; justify-content:center; background:transparent}
+.mmd pre.mermaid{margin:0; background:transparent}
+.mmd pre.mermaid svg{display:block; margin:0 auto}
 .mmd-cap{font-size:12.5px; color:var(--ink-3); padding:6px 6px 8px}
 
 /* funnel */
@@ -481,7 +482,7 @@ mermaid.initialize({
   theme: 'neutral',
   fontFamily: '"Pretendard Variable", Pretendard, sans-serif',
   themeVariables: { primaryColor: '#e8f0fb', primaryBorderColor: '#1450a3', primaryTextColor: '#1a1c20', lineColor: '#4b5563', fontSize: '14px' },
-  flowchart: { curve: 'basis', htmlLabels: true }
+  flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: false }
 });
 </script>
 </body>
